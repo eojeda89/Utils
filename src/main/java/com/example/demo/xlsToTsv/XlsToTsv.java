@@ -62,12 +62,12 @@ public class XlsToTsv {
                             String source = "";
                             String target = "";
                             if (row.getCell(3) != null)
-                                key = row.getCell(3).getRichStringCellValue().getString() + "_" + y;
+                                key = row.getCell(3).getRichStringCellValue().getString().replace("\n","") + "_" + y;
                             String language = sheet.getSheetName();
                             if (row.getCell(1) != null && row.getCell(1).getCellType() == CellType.STRING)
-                                source = row.getCell(1).getRichStringCellValue().getString();
+                                source = row.getCell(1).getRichStringCellValue().getString().replace("\n","");
                             if (row.getCell(2) != null)
-                                target = row.getCell(2).getRichStringCellValue().getString();
+                                target = row.getCell(2).getRichStringCellValue().getString().replace("\n","");
                             if (!target.equals("") && !key.equals(""))
                                 bw.write(key + "\t" + language + "\t" + source + "\t" + target + "\t\t\n");
                             else if (!source.equals("") && !key.equals(""))
@@ -80,6 +80,157 @@ public class XlsToTsv {
                         sheetIndex++;
                     }
                 }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<>("FUUUUCK!!!", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        System.out.println(files + " files processed in " + (LocalDateTime.now().toEpochSecond(ZoneOffset.UTC) - now.toEpochSecond(ZoneOffset.UTC)) + " seconds");
+        return new ResponseEntity<>("GENERATED!!!", HttpStatus.CREATED);
+    }
+
+    @PostMapping("xlsToTsv/generate2")
+    public ResponseEntity<String> generateONETSVFile(){
+        LocalDateTime now = LocalDateTime.now();
+        int files = 0;
+        try {
+            File inputDir = new File("D:\\PECAT\\inputDir\\");
+            files = inputDir.listFiles().length;
+            if (inputDir.isDirectory() && files > 0) {
+                File fileoutputToReviewDE = new File("D:\\PECAT\\outputDir\\toReviewDE.tsv");
+                File fileoutputToReviewES = new File("D:\\PECAT\\outputDir\\toReviewES.tsv");
+                File fileoutputToReviewFR = new File("D:\\PECAT\\outputDir\\toReviewFR.tsv");
+                File fileoutputToReviewRU = new File("D:\\PECAT\\outputDir\\toReviewRU.tsv");
+                File fileoutputToReviewJP = new File("D:\\PECAT\\outputDir\\toReviewJP.tsv");
+                File fileoutputTotranslateDE = new File("D:\\PECAT\\outputDir\\toTranslateDE.tsv");
+                File fileoutputTotranslateES = new File("D:\\PECAT\\outputDir\\toTranslateES.tsv");
+                File fileoutputTotranslateFR = new File("D:\\PECAT\\outputDir\\toTranslateFR.tsv");
+                File fileoutputTotranslateRU = new File("D:\\PECAT\\outputDir\\toTranslateRU.tsv");
+                File fileoutputTotranslateJP = new File("D:\\PECAT\\outputDir\\toTranslateJP.tsv");
+                BufferedWriter bwTRDE = new BufferedWriter(new FileWriter(fileoutputToReviewDE));
+                BufferedWriter bwTRES = new BufferedWriter(new FileWriter(fileoutputToReviewES));
+                BufferedWriter bwTRFR= new BufferedWriter(new FileWriter(fileoutputToReviewFR));
+                BufferedWriter bwTRRU = new BufferedWriter(new FileWriter(fileoutputToReviewRU));
+                BufferedWriter bwTRJP = new BufferedWriter(new FileWriter(fileoutputToReviewJP));
+                BufferedWriter bwTTDE = new BufferedWriter(new FileWriter(fileoutputTotranslateDE));
+                BufferedWriter bwTTES = new BufferedWriter(new FileWriter(fileoutputTotranslateES));
+                BufferedWriter bwTTFR = new BufferedWriter(new FileWriter(fileoutputTotranslateFR));
+                BufferedWriter bwTTRU = new BufferedWriter(new FileWriter(fileoutputTotranslateRU));
+                BufferedWriter bwTTJP = new BufferedWriter(new FileWriter(fileoutputTotranslateJP));
+                String head = "id\tlocale\tinputText\ttranslation1\tnot_sure\tnote\n";
+                bwTRDE.write(head);
+                bwTRES.write(head);
+                bwTRFR.write(head);
+                bwTRRU.write(head);
+                bwTRJP.write(head);
+                bwTTDE.write(head);
+                bwTTES.write(head);
+                bwTTFR.write(head);
+                bwTTRU.write(head);
+                bwTTJP.write(head);
+                for (int i = 0; i < files; i++) {
+                    File xlsx = inputDir.listFiles()[i];
+                    FileInputStream file = new FileInputStream(xlsx);
+                    System.out.println("FILE: " + xlsx.getName());
+                    /*bwTRDE.write(xlsx.getName() + "\n");
+                    bwTRES.write(xlsx.getName() + "\n");
+                    bwTRFR.write(xlsx.getName() + "\n");
+                    bwTRRU.write(xlsx.getName() + "\n");
+                    bwTRJP.write(xlsx.getName() + "\n");
+                    bwTTDE.write(xlsx.getName() + "\n");
+                    bwTTES.write(xlsx.getName() + "\n");
+                    bwTTFR.write(xlsx.getName() + "\n");
+                    bwTTRU.write(xlsx.getName() + "\n");
+                    bwTTJP.write(xlsx.getName() + "\n");*/
+                    File dirOutput = new File("D:\\PECAT\\outputDir\\" );
+                    dirOutput.mkdir();
+                    Workbook workbook = new XSSFWorkbook(file);
+                    int sheetIndex = 0;
+                    for (Sheet sheet : workbook) {
+                        sheet = workbook.getSheetAt(sheetIndex);
+                        if (sheet.getSheetName().equals("Sheet1")) {
+                            sheetIndex++;
+                            continue;
+                        }
+                        System.out.println("Sheet: " + sheet.getSheetName());
+                        int y = 0;
+                        for (Row row : sheet) {
+                            if (y == 0) {y++; continue;}
+                            String key = "";
+                            String source = "";
+                            String target = "";
+                            if (row.getCell(3) != null)
+                                key = row.getCell(3).getRichStringCellValue().getString().replace("\n","") + "_" + y;
+                            String language = sheet.getSheetName();
+                            if (row.getCell(1) != null && row.getCell(1).getCellType() == CellType.STRING)
+                                source = row.getCell(1).getRichStringCellValue().getString().replace("\n","");
+                            if (row.getCell(2) != null)
+                                target = row.getCell(2).getRichStringCellValue().getString().replace("\n","");
+
+                            if (!target.equals("") && !key.equals("")) {
+                                switch (sheet.getSheetName()){
+                                    case "DE":{
+                                        bwTRDE.write(key + "\t" + language + "\t" + source + "\t" + target + "\t\t\n");
+                                        break;
+                                    }
+                                    case "ES":{
+                                        bwTRES.write(key + "\t" + language + "\t" + source + "\t" + target + "\t\t\n");
+                                        break;
+                                    }
+                                    case "FR":{
+                                        bwTRFR.write(key + "\t" + language + "\t" + source + "\t" + target + "\t\t\n");
+                                        break;
+                                    }
+                                    case "RU":{
+                                        bwTRRU.write(key + "\t" + language + "\t" + source + "\t" + target + "\t\t\n");
+                                        break;
+                                    }
+                                    case "JP":{
+                                        bwTRJP.write(key + "\t" + language + "\t" + source + "\t" + target + "\t\t\n");
+                                        break;
+                                    }
+                                }
+                            }
+                            else if (!source.equals("") && !key.equals("")) {
+                                switch (sheet.getSheetName()){
+                                    case "DE":{
+                                        bwTTDE.write(key + "\t" + language + "\t" + source + "\t" + target + "\t\t\n");
+                                        break;
+                                    }
+                                    case "ES":{
+                                        bwTTES.write(key + "\t" + language + "\t" + source + "\t" + target + "\t\t\n");
+                                        break;
+                                    }
+                                    case "FR":{
+                                        bwTTFR.write(key + "\t" + language + "\t" + source + "\t" + target + "\t\t\n");
+                                        break;
+                                    }
+                                    case "RU":{
+                                        bwTTRU.write(key + "\t" + language + "\t" + source + "\t" + target + "\t\t\n");
+                                        break;
+                                    }
+                                    case "JP":{
+                                        bwTTJP.write(key + "\t" + language + "\t" + source + "\t" + target + "\t\t\n");
+                                        break;
+                                    }
+                                }
+                            }
+                            else System.out.println("ROW NOT PROCESSED: " + (y + 1));
+                            y++;
+                        }
+                        sheetIndex++;
+                    }
+                }
+                bwTRDE.close();
+                bwTRES.close();
+                bwTRFR.close();
+                bwTRRU.close();
+                bwTRJP.close();
+                bwTTDE.close();
+                bwTTES.close();
+                bwTTFR.close();
+                bwTTRU.close();
+                bwTTJP.close();
             }
         }catch (Exception e){
             e.printStackTrace();
