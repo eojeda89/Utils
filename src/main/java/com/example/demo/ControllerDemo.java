@@ -51,10 +51,10 @@ public class ControllerDemo {
 
         try {
             for (int i = 1; i <= 80; i++) {
-                String name = "Alisa_" + object.getName() + "_" + i;
+                String name = "Alisa_" + object.getName() + "_" + i + 80;
                 UserModel userModel = new UserModel();
                 userModel.setNickname(name);
-                userModel.setEmail("alisa_" + object.getName() + "_" + i + "@pecat.com");
+                userModel.setEmail("alisa_" + object.getName() + "_" + (i + 80) + "@pecat.com");
                 userModel.setRoles(roles);
                 userModel.setPassword(name);
                 userModel.setSource(source);
@@ -80,7 +80,7 @@ public class ControllerDemo {
         List<String> response = new ArrayList<>();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("x-access-token", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbkBwZ3dmLmNvbSIsImV4cCI6MTY0NzA5MjM4Mn0.yLDta0Z-KMgfUyq1P1oFvORNwHqo0x6let7dYO0kvDDxTkWTYKEQy4bmVKO0jN5tHxxNamf8WB78QF2o9mNd0g");
+        headers.add("x-access-token", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbkBwZ3dmLmNvbSIsImV4cCI6MTY0ODU1Njc3MH0.ufq3iTFpsf1HkVaMoD0TVcFV2iwtiYJx7OCAXRQKPwNWR1zFht2AEOEIajw6BI_TlKX5JFpCowLcztePvnH0Ug");
         JSONObject req = new JSONObject();
         String transUri = "https://pecat.pangeamt.com:8443/pecatv1/users";
         String result = "";
@@ -92,7 +92,7 @@ public class ControllerDemo {
         source.add(sT[0]);
         target.add(sT[1]);
         List<Integer> groups = new ArrayList<>();
-        groups.add(16);
+        groups.add(15);
 
         try {
             TrustStrategy acceptingTrustStrategy = (cert, authType) -> true;
@@ -115,10 +115,10 @@ public class ControllerDemo {
             RestTemplate restTemplate = new RestTemplate(requestFactory);
 
             for (int i = 1; i <= object.getNumberUser(); i++) {
-                String name = object.getSuffix() + "_" + object.getName() + "_" + i;
+                String name = object.getSuffix() + "_" + object.getName() + "_" + (i + 80);
                 UserModel userModel = new UserModel();
                 userModel.setNickname(name);
-                userModel.setEmail(object.getSuffix().toLowerCase() + "_" + object.getName() + "_" + i + "@pecat.com");
+                userModel.setEmail(object.getSuffix().toLowerCase() + "_" + object.getName() + "_" + (i + 80) + "@pecat.com");
                 userModel.setRoles(roles);
                 userModel.setPassword(name);
                 userModel.setSource(source);

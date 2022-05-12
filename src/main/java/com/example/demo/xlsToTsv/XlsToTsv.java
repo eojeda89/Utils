@@ -10,10 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -238,6 +236,114 @@ public class XlsToTsv {
         }
         System.out.println(files + " files processed in " + (LocalDateTime.now().toEpochSecond(ZoneOffset.UTC) - now.toEpochSecond(ZoneOffset.UTC)) + " seconds");
         return new ResponseEntity<>("GENERATED!!!", HttpStatus.CREATED);
+    }
+
+    @PostMapping("xlsToTsv/modifyTSV")
+    public ResponseEntity<String> modifyTSVFile() {
+        int files = 0;
+        try {
+            File inputDir = new File("D:\\PECAT\\inputDir\\");
+            files = inputDir.listFiles().length;
+            if (inputDir.isDirectory() && files > 0) {
+                for (int i = 0; i < files; i++) {
+                    File xlsx = inputDir.listFiles()[i];
+                    FileInputStream file = new FileInputStream(xlsx);
+                    BufferedReader br = new BufferedReader(new InputStreamReader(file, StandardCharsets.UTF_8));
+                    System.out.println("FILE: " + xlsx.getName());
+
+                    File fileoutput = new File("D:\\PECAT\\outputDir\\" + xlsx.getName());
+                    BufferedWriter bw = new BufferedWriter(new FileWriter(fileoutput));
+                    String line = br.readLine();
+                    int ommitedLines = 0;
+                    int changedLines = 0;
+                    while (line != null) {
+                        if (line.startsWith("A bunch of fives")
+                                || line.startsWith("Brummagem screwdriver")
+                                || line.startsWith("Dog's breakfast")
+                                || line.startsWith("Good in parts")
+                                || line.startsWith("Wotcher")
+                                || line.startsWith("Damp squib")
+                                || line.startsWith("Work one's arse off")
+                                || line.startsWith("Fall off the back of a lorry")
+                                || line.startsWith("The smallest room in the house")
+                                || line.startsWith("Blind-man's buff")
+                                || line.startsWith("Is the Pope Polish?")
+                                || line.startsWith("Hooray Henry")
+                                || line.startsWith("bang on")
+                                || line.startsWith("Sleeveless errand")
+                                || line.startsWith("Money for old rope")
+                                || line.startsWith("Far from the madding crowd")
+                                || line.startsWith("Rag-and-bone man")
+                                || line.startsWith("Pick 'n' mix")
+                                || line.startsWith("Bricks and clicks")
+                                || line.startsWith("head the ball")
+                                || line.startsWith("Local derby")
+                                || line.startsWith("Panic stations")
+                                || line.startsWith("Tissue of lies")
+                                || line.startsWith("Storm in a teacup")
+                                || line.startsWith("Copper-bottomed")
+                                || line.startsWith("The year dot")
+                                || line.startsWith("Donkey's years")
+                        ) {
+                            line = br.readLine();
+                            ommitedLines++;
+                            continue;
+                        }
+                        if (line.startsWith("Do a favour")) {
+                            line = line.replaceAll("favour", "favor");
+                            changedLines++;
+                        }
+                        bw.write(line+"\n");
+                        line = br.readLine();
+                    }
+
+                    System.out.println("OMITTED LINES: " + ommitedLines);
+                    System.out.println("CHANGED LINES: " + changedLines);
+                    br.close();
+                    bw.close();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("xlsToTsv/modifyTSV2")
+    public ResponseEntity<String> modifyTSVFile2() {
+        int files = 0;
+        try {
+            File inputDir = new File("D:\\PECAT\\inputDir\\");
+            files = inputDir.listFiles().length;
+            if (inputDir.isDirectory() && files > 0) {
+                for (int i = 0; i < files; i++) {
+                    File xlsx = inputDir.listFiles()[i];
+                    FileInputStream file = new FileInputStream(xlsx);
+                    BufferedReader br = new BufferedReader(new InputStreamReader(file, StandardCharsets.UTF_8));
+                    System.out.println("FILE: " + xlsx.getName());
+
+                    File fileoutput = new File("D:\\PECAT\\outputDir\\" + xlsx.getName());
+                    BufferedWriter bw = new BufferedWriter(new FileWriter(fileoutput));
+                    String line = br.readLine();
+                    int counter = 1;
+                    while (line != null){
+                        if (!line.trim().replace("\n", "").replace("\t", "").isEmpty()){
+                            bw.write(line.replace("\n", "") + "\n");
+                        } else {
+                            System.out.println("LINE OMITTED: " + counter);
+                        }
+                        line = br.readLine(); counter++;
+                    }
+                    br.close();
+                    bw.close();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }
