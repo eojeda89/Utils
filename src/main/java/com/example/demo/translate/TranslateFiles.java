@@ -30,7 +30,7 @@ public class TranslateFiles {
         //Procesando el fichero y creando el body del request
         int files = 0;
         try {
-            File inputDir = new File("D:/4-Trabajo/translate/input");
+            File inputDir = new File("/opt/tomcat/translate/input");
             files = inputDir.listFiles().length;
             if (inputDir.isDirectory() && files > 0) {
                 for (int i = 0; i < files; i++) {
@@ -48,7 +48,7 @@ public class TranslateFiles {
                     for (String targetIdiom : targetIdioms) {
                         int id = 1;
                         //Creando el body del request de 20 en 20
-                        File fileoutput = new File("D:/4-Trabajo/translate/output/" + inputFile.getName() + "_en_" + targetIdiom + ".tsv");
+                        File fileoutput = new File("/opt/tomcat/translate/output/" + inputFile.getName() + "_en_" + targetIdiom + ".tsv");
                         BufferedWriter bw = new BufferedWriter(new FileWriter(fileoutput));
                         bw.write("id\tlocale\tinputText\ttranslation1\tmark\tnot_sure\tnote\n");
                         for (int index = 0; index-1 < texts.size() / 20; index ++) {
@@ -100,5 +100,44 @@ public class TranslateFiles {
             return new ResponseEntity<>("FAILED", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>("OK", HttpStatus.OK);
+    }
+
+    @PostMapping(path = "upload", consumes = "multipart/form-data")
+    public ResponseEntity<String> uploadFiles(@RequestParam MultipartFile...files){
+        if (files.length>0){
+            for (MultipartFile file: files){
+                try {
+                    writeToFile(file.getInputStream(), "/opt/tomcat/translate/input/" + file.getName());
+                }catch (Exception e){
+                    e.printStackTrace();
+                    return new ResponseEntity<>("UFF!!!", HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            }
+            return new ResponseEntity<>("OK!!!", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("OH!!!", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    // save uploaded file to new location
+    private int writeToFile(InputStream uploadedInputStream, String uploadedFileLocation) {
+
+        int l = 0;
+        try {
+            int read = 0;
+            byte[] bytes = new byte[1024];
+            OutputStream out = new FileOutputStream(new File(uploadedFileLocation));
+
+            while ((read = uploadedInputStream.read(bytes)) != -1) {
+                out.write(bytes, 0, read);
+                l = l + read;
+            }
+            out.flush();
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return (l);
     }
 }
