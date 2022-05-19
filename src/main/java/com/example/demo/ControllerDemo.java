@@ -89,7 +89,7 @@ public class ControllerDemo {
         source.add(sT[0]);
         target.add(sT[1]);
         List<Integer> groups = new ArrayList<>();
-        groups.add(15);
+        //groups.add(15);
 
         try {
             TrustStrategy acceptingTrustStrategy = (cert, authType) -> true;
@@ -111,11 +111,12 @@ public class ControllerDemo {
                     new HttpComponentsClientHttpRequestFactory(httpClient);
             RestTemplate restTemplate = new RestTemplate(requestFactory);
 
-            for (int i = 1; i <= object.getNumberUser(); i++) {
-                String name = object.getSuffix() + "_" + object.getName() + "_" + (i + 80);
+            for (int i = 2; i <= object.getNumberUser(); i++) {
+                String name = object.getSuffix() + "_" + object.getName() + "_" + (i);
                 UserModel userModel = new UserModel();
                 userModel.setNickname(name);
-                userModel.setEmail(object.getSuffix().toLowerCase() + "_" + object.getName() + "_" + (i + 80) + "@pecat.com");
+                userModel.setEmail(object.getEmail() + "_" + (i) + object.getDomain());
+                //userModel.setEmail(object.getSuffix().toLowerCase() + "_" + object.getName() + "_" + (i) + "@pecat.com");
                 userModel.setRoles(roles);
                 userModel.setPassword(name);
                 userModel.setSource(source);

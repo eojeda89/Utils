@@ -23,14 +23,14 @@ import java.util.List;
 @RequestMapping("/")
 public class TranslateFiles {
 
-    private final List<String> targetIdioms = Arrays.asList("es","zh","de","fr","ja","pt","ko","ru","it","pl","nl","tr","cs","ar","hi");
+    private final List<String> targetIdioms = Arrays.asList("hi");//"zh","de","fr","ja","pt","ko","ru","it","pl","nl","es","tr","cs","ar",
 
     @PostMapping(value = "translate")
     public ResponseEntity<String> translateFile(){
         //Procesando el fichero y creando el body del request
         int files = 0;
         try {
-            File inputDir = new File("/opt/tomcat/translate/input");
+            File inputDir = new File("D:/4-Trabajo/translate/input");
             files = inputDir.listFiles().length;
             if (inputDir.isDirectory() && files > 0) {
                 for (int i = 0; i < files; i++) {
@@ -41,14 +41,16 @@ public class TranslateFiles {
                     List<String> texts = new ArrayList<>();
                     String line = br.readLine();
                     while (line != null){
-                        texts.add(line);
+                        if (30<line.length()&&500>line.length()) {
+                            texts.add(line.trim().replace("\t", " "));
+                        }
                         line = br.readLine();
                     }
                     br.close();
                     for (String targetIdiom : targetIdioms) {
                         int id = 1;
                         //Creando el body del request de 20 en 20
-                        File fileoutput = new File("/opt/tomcat/translate/output/" + inputFile.getName() + "_en_" + targetIdiom + ".tsv");
+                        File fileoutput = new File("D:/4-Trabajo/translate/output/" + inputFile.getName() + "_en_" + targetIdiom + ".tsv");
                         BufferedWriter bw = new BufferedWriter(new FileWriter(fileoutput));
                         bw.write("id\tlocale\tinputText\ttranslation1\tmark\tnot_sure\tnote\n");
                         for (int index = 0; index-1 < texts.size() / 20; index ++) {
@@ -80,15 +82,16 @@ public class TranslateFiles {
                                 for (int x = 0; x < response.size(); x++) {
                                     List<LinkedHashMap<String, String>> trs = response.get(x);
                                     LinkedHashMap<String, String> ss = trs.get(0);
-                                    System.out.println("Line" + (x + 1) + "\t" + ss.get("src") + "\t" + ss.get("tgt"));
+                                    //System.out.println("Line " + (id) + "\t" + ss.get("src") + "\t" + ss.get("tgt"));
                                     bw.write((id) + "\t" + translateModel.getSrc() + "\t" + ss.get("src") + "\t" + ss.get("tgt") + "\n");
                                     id++;
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
-                                return new ResponseEntity<>("FAILED", HttpStatus.INTERNAL_SERVER_ERROR);
+                                //return new ResponseEntity<>("FAILED", HttpStatus.INTERNAL_SERVER_ERROR);
                             }
                         }
+                        System.out.println("**********************************END OF FILE " + fileoutput.getName() +"********************************************************");
                         bw.close();
                     }
                 }
