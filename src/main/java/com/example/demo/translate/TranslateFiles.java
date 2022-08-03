@@ -143,4 +143,59 @@ public class TranslateFiles {
 
         return (l);
     }
+
+    @PostMapping(value = "normalize")
+    public ResponseEntity<String> normalizeFile(){
+        //Procesando el fichero y creando el body del request
+        int files = 0;
+        try {
+            File inputDir = new File("D:/4-Trabajo/translate/normalizing/input");
+            files = inputDir.listFiles().length;
+            if (inputDir.isDirectory() && files > 0) {
+                for (int i = 0; i < files; i++) {
+                    File inputFile = inputDir.listFiles()[i];
+                    FileInputStream file = new FileInputStream(inputFile);
+                    BufferedReader br = new BufferedReader(new InputStreamReader(file, StandardCharsets.UTF_8));
+                    System.out.println("FILE: " + inputFile.getName());
+                    List<String> texts = new ArrayList<>();
+                    String line = br.readLine();
+                    while (line != null){
+                        //if (30<line.length()&&500>line.length()) {
+                        if (!line.equals("\r\n"))
+                            texts.add(line
+                                    .trim()
+                                    .replace("\t", " ")
+                                    .replace("\t\n", " ")
+                                    .replace("。", ".\n")
+                                    .replace("。。。\n", "。。。 ")
+                                    .replace("; ", ";\n")
+                                    .replace("。[", "。\n[")
+                                    .replaceAll("op\\.\n", "op。 ")
+                                    .replaceAll("v\\.\n", "v。 ")
+                                    .replaceAll("\\b(https?|ftp|file)://[\\w+&@#/%?=~_|!:,.;]*[\\w+&@#/%=~_|]", "")
+                                    .replaceAll("([a-z0-9]+(\\.?[a-z0-9])*)+@(([a-z]+)\\.([a-z]+))+", "")
+                                    .replaceAll("(A|B|C|D|E|F|G|H|I|J|K|L|M|N|O|P|Q|R|S|T|U|V|W|X|Y|Z)\\.\n", "")
+                            );
+                        //}
+                        line = br.readLine();
+                    }
+                    br.close();
+                    File fileoutput = new File("D:/4-Trabajo/translate/normalizing/output/" + inputFile.getName());
+                    BufferedWriter bw = new BufferedWriter(new FileWriter(fileoutput));
+                    for (String text : texts) {
+                        bw.write(text);
+                    }
+                    System.out.println("**********************************END OF FILE " + fileoutput.getName() +"********************************************************");
+                    bw.close();
+
+                }
+            } else{
+                return new ResponseEntity<>("FAILED", HttpStatus.BAD_REQUEST);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<>("FAILED", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>("OK", HttpStatus.OK);
+    }
 }
