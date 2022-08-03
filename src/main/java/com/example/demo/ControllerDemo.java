@@ -19,6 +19,7 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.net.ssl.SSLContext;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -77,9 +78,9 @@ public class ControllerDemo {
         List<String> response = new ArrayList<>();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("x-access-token", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbkBwZ3dmLmNvbSIsImV4cCI6MTY0ODU1Njc3MH0.ufq3iTFpsf1HkVaMoD0TVcFV2iwtiYJx7OCAXRQKPwNWR1zFht2AEOEIajw6BI_TlKX5JFpCowLcztePvnH0Ug");
+        headers.add("x-access-token", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbkBwZ3dmLmNvbSIsImV4cCI6MTY1OTYyODYxMH0.yPV5V-zaBCmdt_rJ4ZD04WkSbeUETjpdxXmE6jhhHxAXSyaMJL2z4-MLycc6dCxF_tLWzXrRLJreHqeciC4kbw");
         JSONObject req = new JSONObject();
-        String transUri = "https://pecat.pangeamt.com:8443/pecatv1/users";
+        String transUri = "https://pecat2.pangeamt.com:8443/pecatv1/users";
         String result = "";
         List<String> roles = new ArrayList<>();
         roles.add("Translator");
@@ -111,11 +112,11 @@ public class ControllerDemo {
                     new HttpComponentsClientHttpRequestFactory(httpClient);
             RestTemplate restTemplate = new RestTemplate(requestFactory);
 
-            for (int i = 2; i <= object.getNumberUser(); i++) {
+            for (int i = 1; i <= object.getNumberUser(); i++) {
                 String name = object.getSuffix() + "_" + object.getName() + "_" + (i);
                 UserModel userModel = new UserModel();
                 userModel.setNickname(name);
-                userModel.setEmail(object.getEmail() + "_" + (i) + object.getDomain());
+                userModel.setEmail(object.getEmail() + "_" + object.getName() + "_" + (i) + object.getDomain());
                 //userModel.setEmail(object.getSuffix().toLowerCase() + "_" + object.getName() + "_" + (i) + "@pecat.com");
                 userModel.setRoles(roles);
                 userModel.setPassword(name);
@@ -126,6 +127,95 @@ public class ControllerDemo {
                 userModel.setGroups(groups);
 
                 HttpEntity<UserModel> request = new HttpEntity<>(userModel, headers);
+                ResponseEntity<String> responseEntity = restTemplate.exchange(transUri, HttpMethod.POST, request, String.class);
+                result = responseEntity.getBody();
+                System.out.println(result);
+                response.add(result);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("users/uri")
+    public ResponseEntity<List<String>> createURIWithSSL(@RequestBody UriRange userids) {
+        List<String> response = new ArrayList<>();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("x-access-token", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbkBwZ3dmLmNvbSIsImV4cCI6MTY1OTYyODYxMH0.yPV5V-zaBCmdt_rJ4ZD04WkSbeUETjpdxXmE6jhhHxAXSyaMJL2z4-MLycc6dCxF_tLWzXrRLJreHqeciC4kbw");
+        JSONObject req = new JSONObject();
+        String transUri = "https://pecat2.pangeamt.com:8443/pecatv1/generateuri";
+        String result = "";
+        try {
+            TrustStrategy acceptingTrustStrategy = (cert, authType) -> true;
+            SSLContext sslContext = SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy).build();
+            SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslContext, NoopHostnameVerifier.INSTANCE);
+
+            Registry<ConnectionSocketFactory> socketFactoryRegistry =
+                    RegistryBuilder.<ConnectionSocketFactory>create()
+                            .register("https", sslsf)
+                            .register("http", new PlainConnectionSocketFactory())
+                            .build();
+
+            BasicHttpClientConnectionManager connectionManager =
+                    new BasicHttpClientConnectionManager(socketFactoryRegistry);
+            CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(sslsf)
+                    .setConnectionManager(connectionManager).build();
+
+            HttpComponentsClientHttpRequestFactory requestFactory =
+                    new HttpComponentsClientHttpRequestFactory(httpClient);
+            RestTemplate restTemplate = new RestTemplate(requestFactory);
+            int end = userids.getEnd();
+            int start = userids.getStart();
+            while (start <= end) {
+                IdOnlyJsonFromUI idOnlyJsonFromUI = new IdOnlyJsonFromUI();
+                idOnlyJsonFromUI.setId(start);
+                HttpEntity<IdOnlyJsonFromUI> request = new HttpEntity<>(idOnlyJsonFromUI, headers);
+                ResponseEntity<String> responseEntity = restTemplate.exchange(transUri, HttpMethod.POST, request, String.class);
+                result = responseEntity.getBody();
+                System.out.println(result);
+                response.add(result);
+                start++;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("users/uri/list")
+    public ResponseEntity<List<String>> createURIListWithSSL(@RequestBody List<Integer> userids) {
+        List<String> response = new ArrayList<>();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("x-access-token", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbkBwZ3dmLmNvbSIsImV4cCI6MTY1OTYyODYxMH0.yPV5V-zaBCmdt_rJ4ZD04WkSbeUETjpdxXmE6jhhHxAXSyaMJL2z4-MLycc6dCxF_tLWzXrRLJreHqeciC4kbw");
+        JSONObject req = new JSONObject();
+        String transUri = "https://pecat2.pangeamt.com:8443/pecatv1/generateuri";
+        String result = "";
+        try {
+            TrustStrategy acceptingTrustStrategy = (cert, authType) -> true;
+            SSLContext sslContext = SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy).build();
+            SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslContext, NoopHostnameVerifier.INSTANCE);
+
+            Registry<ConnectionSocketFactory> socketFactoryRegistry =
+                    RegistryBuilder.<ConnectionSocketFactory>create()
+                            .register("https", sslsf)
+                            .register("http", new PlainConnectionSocketFactory())
+                            .build();
+
+            BasicHttpClientConnectionManager connectionManager =
+                    new BasicHttpClientConnectionManager(socketFactoryRegistry);
+            CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(sslsf)
+                    .setConnectionManager(connectionManager).build();
+
+            HttpComponentsClientHttpRequestFactory requestFactory =
+                    new HttpComponentsClientHttpRequestFactory(httpClient);
+            RestTemplate restTemplate = new RestTemplate(requestFactory);
+            for (int id : userids) {
+                IdOnlyJsonFromUI idOnlyJsonFromUI = new IdOnlyJsonFromUI();
+                idOnlyJsonFromUI.setId(id);
+                HttpEntity<IdOnlyJsonFromUI> request = new HttpEntity<>(idOnlyJsonFromUI, headers);
                 ResponseEntity<String> responseEntity = restTemplate.exchange(transUri, HttpMethod.POST, request, String.class);
                 result = responseEntity.getBody();
                 System.out.println(result);

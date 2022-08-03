@@ -23,7 +23,7 @@ import java.util.List;
 @RequestMapping("/")
 public class TranslateFiles {
 
-    private final List<String> targetIdioms = Arrays.asList("hi");//"zh","de","fr","ja","pt","ko","ru","it","pl","nl","es","tr","cs","ar",
+    private final List<String> targetIdioms = Arrays.asList("es");//"zh","de","fr","ja","pt","ko","ru","it","pl","nl",,"tr","cs","ar","hi"
 
     @PostMapping(value = "translate")
     public ResponseEntity<String> translateFile(){
