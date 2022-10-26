@@ -23,10 +23,10 @@ import java.util.HashMap;
 import java.util.List;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/users")
 public class ControllerDemo {
 
-    @PostMapping("users")
+    @PostMapping()
     public ResponseEntity<List<String>> createBatchUser(@RequestBody PostObject object) {
         List<String> response = new ArrayList<>();
         RestTemplate restTemplate = new RestTemplate();
@@ -73,7 +73,7 @@ public class ControllerDemo {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping("users/ssl")
+    @PostMapping("/ssl")
     public ResponseEntity<List<String>> createBatchUserWithSSL(@RequestBody PostObject object) {
         List<String> response = new ArrayList<>();
         HttpHeaders headers = new HttpHeaders();
@@ -138,7 +138,7 @@ public class ControllerDemo {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping("users/uri")
+    @PostMapping("/uri")
     public ResponseEntity<List<String>> createURIWithSSL(@RequestBody UriRange userids) {
         List<String> response = new ArrayList<>();
         HttpHeaders headers = new HttpHeaders();
@@ -184,7 +184,7 @@ public class ControllerDemo {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping("users/uri/list")
+    @PostMapping("/uri/list")
     public ResponseEntity<List<String>> createURIListWithSSL(@RequestBody List<Integer> userids) {
         List<String> response = new ArrayList<>();
         HttpHeaders headers = new HttpHeaders();
@@ -227,7 +227,7 @@ public class ControllerDemo {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping("users/ssl/test")
+    @PostMapping("/ssl/test")
     public ResponseEntity<List<String>> createBatchUserWithSSLTest(@RequestBody PostObject object) {
         List<String> response = new ArrayList<>();
         HttpHeaders headers = new HttpHeaders();
