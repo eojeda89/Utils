@@ -18,7 +18,7 @@ public class TargetController {
     @Autowired
     SegmentService segmentService;
 
-    @PostMapping(consumes = "multipart/form-data")
+    @PostMapping(path = "/add", consumes = "multipart/form-data")
     public String addSegments(@RequestParam int jobId, @RequestParam MultipartFile file){
         try {
             String fileLocation = "/opt/tomcat/latest/" + file.getOriginalFilename();
@@ -76,5 +76,10 @@ public class TargetController {
         }
 
         return (l);
+    }
+
+    @GetMapping(path = "/check")
+    public String checkConnection(){
+        return "Connection Success...";
     }
 }
