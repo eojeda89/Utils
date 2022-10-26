@@ -20,12 +20,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/translate")
 public class TranslateFiles {
 
     private final List<String> targetIdioms = Arrays.asList("es");//"zh","de","fr","ja","pt","ko","ru","it","pl","nl",,"tr","cs","ar","hi"
 
-    @PostMapping(value = "translate")
+    @PostMapping(value = "")
     public ResponseEntity<String> translateFile(){
         //Procesando el fichero y creando el body del request
         int files = 0;
@@ -105,7 +105,7 @@ public class TranslateFiles {
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 
-    @PostMapping(path = "upload", consumes = "multipart/form-data")
+    @PostMapping(path = "/upload", consumes = "multipart/form-data")
     public ResponseEntity<String> uploadFiles(@RequestParam MultipartFile...files){
         if (files.length>0){
             for (MultipartFile file: files){
@@ -144,7 +144,7 @@ public class TranslateFiles {
         return (l);
     }
 
-    @PostMapping(value = "normalize")
+    @PostMapping(value = "/normalize")
     public ResponseEntity<String> normalizeFile(){
         //Procesando el fichero y creando el body del request
         int files = 0;

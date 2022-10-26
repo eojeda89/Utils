@@ -20,10 +20,10 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/xlsToTsv")
 public class XlsToTsv {
 
-    @PostMapping("xlsToTsv/generate")
+    @PostMapping("/generate")
     public ResponseEntity<String> generateTSVFile(){
         LocalDateTime now = LocalDateTime.now();
         int files = 0;
@@ -87,7 +87,7 @@ public class XlsToTsv {
         return new ResponseEntity<>("GENERATED!!!", HttpStatus.CREATED);
     }
 
-    @PostMapping("xlsToTsv/generate2")
+    @PostMapping("/generate2")
     public ResponseEntity<String> generateONETSVFile(){
         LocalDateTime now = LocalDateTime.now();
         int files = 0;
@@ -238,7 +238,7 @@ public class XlsToTsv {
         return new ResponseEntity<>("GENERATED!!!", HttpStatus.CREATED);
     }
 
-    @PostMapping("xlsToTsv/modifyTSV")
+    @PostMapping("/modifyTSV")
     public ResponseEntity<String> modifyTSVFile() {
         int files = 0;
         try {
@@ -310,7 +310,7 @@ public class XlsToTsv {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("xlsToTsv/modifyTSV2")
+    @PostMapping("/modifyTSV2")
     public ResponseEntity<String> modifyTSVFile2() {
         int files = 0;
         try {
