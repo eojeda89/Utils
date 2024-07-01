@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestController
@@ -48,6 +48,49 @@ public class TargetController {
                 count++;
                 System.out.println("    Done....(" + count + "/" + beans.size() + ")");
             }
+            inputFile.delete();
+            return "Successfully!!!";
+            //} else return "NO file on input directory...";
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
+    @PostMapping(path = "/add/alt", consumes = "multipart/form-data")
+    public String addAltTargets(@RequestParam int jobId, @RequestParam MultipartFile file){
+        try {
+            String fileLocation = "/opt/tomcat/latest/" + file.getOriginalFilename();
+            writeToFile(file.getInputStream(), fileLocation);
+            //File inputDir = new File("E:\\PECAT\\inputDir\\");
+            //int files = inputDir.listFiles().length;
+            //if (inputDir.isDirectory() && files > 0) {
+            File inputFile = new File(fileLocation);
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(inputFile));
+            BeanListProcessor<ImportJobRow> rowProcessor = new BeanListProcessor<>(ImportJobRow.class);
+            TsvParserSettings parserSettings = new TsvParserSettings();
+            parserSettings.setProcessor(rowProcessor);
+            parserSettings.setHeaderExtractionEnabled(true);
+            TsvParser parser = new TsvParser(parserSettings);
+            parser.parse(bufferedReader);
+            List<ImportJobRow> beans = rowProcessor.getBeans();
+            List<Tu> tuList = segmentService.findTusInJobWithNoAltTarget(jobId);
+            List<Tu> toSave = new ArrayList<>();
+            int count = 0;
+            for (ImportJobRow importJobRow : beans) {
+                List<Tu> tus = tuList.stream().filter(tu1 -> tu1.getExtid().equals(importJobRow.getExtId())).collect(Collectors.toList());
+                Tu tu = tus.isEmpty()?null:tus.get(0);
+                if (tu != null) {
+                    tu.setAlttrans(importJobRow.getAltTranslation());
+                    toSave.add(tu);
+                    System.out.print("TU ID: " + tu.getId());
+                } else{
+                    System.out.println("TU ID: Null");
+                }
+                count++;
+                System.out.println("    Done....(" + count + "/" + beans.size() + ")");
+            }
+            segmentService.saveAllTus(toSave);
             inputFile.delete();
             return "Successfully!!!";
             //} else return "NO file on input directory...";

@@ -512,4 +512,6 @@ public interface TuRepository extends JpaRepository<Tu, Integer>, JpaSpecificati
     @Modifying
     @Query(nativeQuery = true, value = "UPDATE tus SET bundleId = :bundleid WHERE jobId = :jobid and id IN :ids")
     void updateTusBundleId(@Param("bundleid") int bundleid, @Param("jobid") int jobid, @Param("ids") List<Integer> ids);
+
+    List<Tu> findByJobidAndAlttransIs(int jobId, String empty);
 }

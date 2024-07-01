@@ -77,4 +77,12 @@ public class SegmentService {
 	public List<Tu> findTusInJob(int jobId) {
 		return tuRepository.findByJobidSQL(jobId);
 	}
+
+	public List<Tu> findTusInJobWithNoAltTarget(int jobId) {
+		return tuRepository.findByJobidAndAlttransIs(jobId, "");
+	}
+
+	public void saveAllTus(List<Tu> toSave) {
+		tuRepository.saveAll(toSave);
+	}
 }
